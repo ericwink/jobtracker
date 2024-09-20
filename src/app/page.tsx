@@ -1,5 +1,10 @@
-import Image from "next/image";
+import JobListingForm from "@/components/JobListingForm";
 
 export default function Home() {
-  return <div>This is the main page</div>;
+  return (
+    <div>
+      <p>This is the main page</p>
+      <JobListingForm />
+    </div>
+  );
 }
