@@ -1,6 +1,5 @@
 "use client";
 
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -22,23 +21,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const jobListingSchema = z.object({
-  websiteURL: z.string(),
-  careerPageURL: z.string(),
-  jobTitle: z
-    .string()
-    .trim()
-    .min(2, { message: "Job Title must have a minimum of two characters" }),
-  experienceRequired: z.number(),
-  saraly: z.number(),
-  hiringManager: z.string(),
-  recruiter: z.string(),
-  //   expirationDate eventually
-});
+import { JobListingType, jobListingSchema } from "@/app/server/jobListing.type";
 
-type JobListingType = z.infer<typeof jobListingSchema>;
+import submitJobListing from "@/app/server/submitJobListing.server";
 
-const JobListingForm = () => {
+import { getMyData } from "@/app/server/getData.server";
+
+interface Props {
+  children: React.ReactNode;
+}
+
+const JobListingForm = ({ children }: Props) => {
   const form = useForm<JobListingType>({
     resolver: zodResolver(jobListingSchema),
     defaultValues: {
@@ -54,6 +47,7 @@ const JobListingForm = () => {
 
   const onSubmit = (data: JobListingType) => {
     console.log(data);
+    submitJobListing(data);
   };
 
   return (
@@ -119,8 +113,10 @@ const JobListingForm = () => {
             </FormItem>
           )}
         />
-
-        <Button type="submit">Submit</Button>
+        {children}
+        <Button variant="destructive" type="submit">
+          Submit
+        </Button>
       </form>
     </Form>
   );
