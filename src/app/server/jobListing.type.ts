@@ -14,4 +14,4 @@ export const jobListingSchema = z.object({
     //   expirationDate eventually
   });
   
-export   type JobListingType = z.infer<typeof jobListingSchema>;
+export type JobListingType = z.infer<typeof jobListingSchema>;

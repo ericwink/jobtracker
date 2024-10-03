@@ -20,18 +20,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTransition } from "react";
 
 import { JobListingType, jobListingSchema } from "@/app/server/jobListing.type";
 
 import submitJobListing from "@/app/server/submitJobListing.server";
-
-import { getMyData } from "@/app/server/getData.server";
 
 interface Props {
   children: React.ReactNode;
 }
 
 const JobListingForm = ({ children }: Props) => {
+  const [isPending, startTransition] = useTransition();
+
   const form = useForm<JobListingType>({
     resolver: zodResolver(jobListingSchema),
     defaultValues: {
@@ -46,8 +47,14 @@ const JobListingForm = ({ children }: Props) => {
   });
 
   const onSubmit = (data: JobListingType) => {
-    console.log(data);
-    submitJobListing(data);
+    startTransition(async () => {
+      try {
+        // console.log(data);
+        const result = await submitJobListing(data);
+      } catch (error) {
+        // handle the error
+      }
+    });
   };
 
   return (
@@ -56,6 +63,7 @@ const JobListingForm = ({ children }: Props) => {
         <FormField
           control={form.control}
           name="jobTitle"
+          disabled={isPending}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Job Title</FormLabel>
@@ -87,6 +95,7 @@ const JobListingForm = ({ children }: Props) => {
         <FormField
           control={form.control}
           name="experienceRequired"
+          disabled={isPending}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Experience Required</FormLabel>
@@ -114,7 +123,7 @@ const JobListingForm = ({ children }: Props) => {
           )}
         />
         {children}
-        <Button variant="destructive" type="submit">
+        <Button isLoading={isPending} disabled={isPending} type="submit">
           Submit
         </Button>
       </form>
