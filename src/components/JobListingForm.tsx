@@ -27,11 +27,7 @@ import { JobListingType, jobListingSchema } from "@/app/server/jobListing.type";
 
 import submitJobListing from "@/app/server/submitJobListing.server";
 
-interface Props {
-  children: React.ReactNode;
-}
-
-const JobListingForm = ({ children }: Props) => {
+const JobListingForm = () => {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
 
@@ -129,7 +125,6 @@ const JobListingForm = ({ children }: Props) => {
             </FormItem>
           )}
         />
-        {children}
         <Button isLoading={isPending} disabled={isPending} type="submit">
           Submit
         </Button>
