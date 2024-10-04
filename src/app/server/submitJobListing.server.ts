@@ -1,33 +1,34 @@
 "use server";
 import { JobListingType, jobListingSchema } from "./jobListing.type";
 import { simulateDelay } from "@/lib/simulateDelay";
+import { revalidatePath } from "next/cache";
+import { fakeData } from "./fakeData";
 
 const submitJobListing = async (data: JobListingType) => {
   try {
     // checking the user is auth'd
     // check for security role
-    // check fails
-
-    const correctSecurityRole = false;
+    const correctSecurityRole = true;
 
     if (!correctSecurityRole) {
       return { error: "You are not authorized to submit a job listing" };
     }
 
-    console.log(data);
-
     const result = jobListingSchema.safeParse(data);
-
-    await simulateDelay();
+    console.log(result);
     if (result.error) {
-      console.log(result.error); // minor change
+      return { error: result.error.issues };
     }
 
-    console.log("good job no errors");
+    await simulateDelay();
+    fakeData.push(result.data);
+    console.log(fakeData);
   } catch (error: any) {
     console.log("Error in submitJobListing:", error);
     return { error: "Something went wrong! Please try again" };
   }
+
+  revalidatePath("/");
 };
 
 export default submitJobListing;
