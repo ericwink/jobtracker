@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useTransition } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 import { JobListingType, jobListingSchema } from "@/app/server/jobListing.type";
 
@@ -32,6 +33,7 @@ interface Props {
 
 const JobListingForm = ({ children }: Props) => {
   const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
 
   const form = useForm<JobListingType>({
     resolver: zodResolver(jobListingSchema),
@@ -49,10 +51,15 @@ const JobListingForm = ({ children }: Props) => {
   const onSubmit = (data: JobListingType) => {
     startTransition(async () => {
       try {
-        // console.log(data);
         const result = await submitJobListing(data);
-      } catch (error) {
-        // handle the error
+        if (result?.error) {
+          throw new Error(result.error);
+        }
+      } catch (error: any) {
+        toast({
+          description: error?.message,
+          variant: "destructive",
+        });
       }
     });
   };
